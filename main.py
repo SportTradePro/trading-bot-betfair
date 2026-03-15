@@ -180,16 +180,9 @@ def pnl():
 def health():
     return 'OK'
 
-@app.route('/telegram-test')
-def telegram_test():
-    import requests
-    import os
-    token = os.getenv('TG_TOKEN')
-    chat = os.getenv('TG_CHAT:ID')  # ← Nome ESATTO tuo Render
-    if token and chat:
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        resp = requests.post(url, data={"chat_id": chat, "text": "🚀 TB Paolo - TELEGRAM LIVE!"})
-        print(f"Telegram status: {resp.status_code}")
-        return f"✅ TELEGRAM OK - Status: {resp.status_code}"
-    return f"❌ token={bool(token)}, chat={bool(chat)}"
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    print("🚀 TRADING BOT 20 LEGHE + WIN/LOSS START!")
+    app.run(host='0.0.0.0', port=port, debug=False)
+
 
