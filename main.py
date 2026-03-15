@@ -182,18 +182,24 @@ def health():
 
 @app.route('/telegram-test')
 def telegram_test():
-    import os, requests
+    import os
     token = os.getenv('TG_TOKEN')
     chat = os.getenv('TG_CHAT:ID')
+    
+    debug = f"""
+    TG_TOKEN presente: {bool(token)}
+    TG_CHAT:ID presente: {bool(chat)}
+    TOKEN: {token[:20] if token else 'NONE'}...
+    CHAT: {chat}
+    """
+    
     if token and chat:
+        import requests
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        r = requests.post(url, data={"chat_id": chat, "text": "🚀 TB OK!"})
-        return f"Status: {r.status_code}"
-    return "❌ No vars"
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    print("🚀 TRADING BOT 20 LEGHE + WIN/LOSS START!")
-    app.run(host='0.0.0.0', port=port, debug=False)
+        r = requests.post(url, data={"chat_id": chat, "text": "🚀 TB Paolo OK!"})
+        debug += f"\nStatus: {r.status_code}"
+        return f"✅ TELEGRAM OK\n{debug}"
+    
+    return f"❌ MISSING VARS\n{debug}"
 
 
