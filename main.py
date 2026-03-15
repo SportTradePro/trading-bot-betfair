@@ -1,3 +1,22 @@
+import os
+import requests
+
+# Telegram (le tue variabili Render)
+TG_TOKEN = os.getenv('TG_TOKEN')
+TG_CHAT = os.getenv('TG_CHAT')
+
+def send_telegram(msg):
+    if TG_TOKEN and TG_CHAT:
+        url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
+        try:
+            requests.post(url, data={"chat_id": TG_CHAT, "text": msg})
+            print("📱 Telegram OK")
+        except:
+            print("❌ Telegram errore")
+
+# TEST IMMEDIATO - metti subito dopo def send_telegram():
+send_telegram("🚀 TRADING BOT Telegram ATTIVO - 66 Mercati Live!")
+
 from flask import Flask, jsonify
 import os
 import time
