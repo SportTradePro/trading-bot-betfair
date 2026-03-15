@@ -1,31 +1,11 @@
-from flask import Flask
+from flask import Flask, request, Response
 import os
-import threading
-import asyncio
-from telegram.ext import Application, CommandHandler
-from telegram import Update
-import time
+import requests
+import json
 
 app = Flask(__name__)
-
-# Telegram BOT REALE
-async def start(update: Update, context):
-    await update.message.reply_text('🚀 Trading Bot Betfair LIVE ✅')
-
-async def main():
-    token = os.getenv('TG_TOKEN')
-    if not token:
-        print("❌ TG_TOKEN mancante")
-        return
-        
-    application = Application.builder().token(token).build()
-    application.add_handler(CommandHandler("start", start))
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-
-def run_telegram():
-    asyncio.run(main())
+TOKEN = os.getenv('TG_TOKEN')
+bot_url = f"https://api.telegram.org/bot{TOKEN}"
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -36,12 +16,25 @@ def catch_all(path):
 def health():
     return 'OK'
 
-if __name__ == '__main__':
-    print("🚀 Avvio bot...")
-    # Telegram in thread
-    telegram_thread = threading.Thread(target=run_telegram, daemon=True)
-    telegram_thread.start()
-    time.sleep(2)  # Aspetta bot
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = request.get_json()
+    chat_id = update['message']['chat']['id']
+    text = update['message']['text']
     
+    if text == '/start':
+        send_message(chat_id, '🚀 Trading Bot Betfair LIVE ✅')
+    
+    return Response('OK', status=200)
+
+def send_message(chat_id, text):
+    url = f"{bot_url}/sendMessage"
+    payload = {
+        'chat_id': chat_id,
+        'text': text
+    }
+    requests.post(url, json=payload)
+
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port)
