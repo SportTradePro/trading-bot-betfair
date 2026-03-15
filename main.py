@@ -176,17 +176,11 @@ def pnl():
     <br><a href="/">← Home</a>
     '''
 
-@app.route('/telegram-test')
-def telegram_test():
-    TG_TOKEN = os.getenv('TG_TOKEN')
-    TG_CHAT = os.getenv('TG_CHAT')
-    
-    if TG_TOKEN and TG_CHAT:
-        import requests
-        url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
-        try:
-            requests.post(url, data={"chat_id": TG_CHAT, "text": "🚀 TB Paolo - TELEGRAM OK!"})
-            return "✅ TELEGRAM INVIO OK"
-        except Exception as e:
-            return f"❌ ERRORE: {e}"
-    return "❌ MISSING TG_TOKEN or TG_CHAT"
+@app.route('/health')
+def health():
+    return 'OK'
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    print("🚀 TRADING BOT 20 LEGHE + WIN/LOSS START!")
+    app.run(host='0.0.0.0', port=port, debug=False)
