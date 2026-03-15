@@ -1,3 +1,35 @@
+from flask import Flask
+import os
+import threading
+import time
+
+app = Flask(__name__)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return '🚀 Trading Bot Betfair LIVE ✅'
+
+@app.route('/health')
+def health():
+    return 'OK'
+
+# IL TUO BOT ORIGINALE (thread separato)
+def run_trading_bot():
+    # ← QUI METTI TUTTO IL TUO CODICE BOT ORIGINALE
+    while True:
+        # tuo codice betfair + telegram
+        time.sleep(1)
+
+if __name__ == '__main__':
+    # Avvia bot in background
+    bot_thread = threading.Thread(target=run_trading_bot, daemon=True)
+    bot_thread.start()
+    
+    # Render vuole Flask su porta HTTP
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
+
 import os
 import time
 import betfairlightweight
@@ -209,3 +241,5 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+flask==3.0.3
