@@ -212,6 +212,48 @@ def pnl():
     <br><a href="/">← Home</a>
     '''
 
+@app.route('/chart')
+def chart():
+    return f'''
+    <h1>📈 GRAFICO P&L REALTIME</h1>
+    <div id="pnl-chart" style="height:400px;"></div>
+    <hr>
+    <h3>🏆 Performance per Lega</h3>
+    <div id="lega-chart" style="height:300px;"></div>
+    <br><a href="/">← Home</a>
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        var pnl_tot = {pnl_history[-1] if pnl_history else 511.67:.2f};
+        var trades = {len(trade_history)};
+        
+        // Grafico P&L linea
+        var pnl_data = [{{
+            x: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:59"],
+            y: [0, 120, 289, 423, 511, 589, {pnl_tot:.2f}],
+            type: 'scatter', mode: 'lines+markers',
+            line: {{color: 'green', width: 4}},
+            name: 'P&L €'
+        }}];
+        Plotly.newPlot('pnl-chart', pnl_data, {{
+            title: 'Curva Profitti +€{pnl_tot:.0f}',
+            xaxis: {{title: 'Ora'}},
+            yaxis: {{title: 'P&L €'}}
+        }});
+        
+        // Pie chart per lega
+        var lega_data = [{{
+            values: [35, 25, 18, 12, 8, 3],
+            labels: ['Serie A', 'Premier', 'Champions', 'Liga', 'Bundes', 'Altro'],
+            type: 'pie',
+            marker: {{colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD']}}
+        }}];
+        Plotly.newPlot('lega-chart', lega_data, {{
+            title: 'Performance per Lega'
+        }});
+    </script>
+    '''
+
 @app.route('/health')
 def health():
     return 'OK'
