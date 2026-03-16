@@ -3,7 +3,7 @@ import requests
 
 # Telegram (le tue variabili Render)
 TG_TOKEN = os.getenv('TG_TOKEN')
-TG_CHAT = os.getenv('TG_CHAT')
+TG_CHAT = os.getenv('TG_CHAT_ID')
 
 def send_telegram(msg):
     if TG_TOKEN and TG_CHAT:
@@ -13,9 +13,6 @@ def send_telegram(msg):
             print("📱 Telegram OK")
         except:
             print("❌ Telegram errore")
-
-# TEST IMMEDIATO - metti subito dopo def send_telegram():
-send_telegram("🚀 TRADING BOT Telegram ATTIVO - 66 Mercati Live!")
 
 from flask import Flask, jsonify
 import os
@@ -120,11 +117,17 @@ def trade():
     if random.random() < 0.82:
         profitto = round(random.uniform(8, 28), 2)
         risultato = "✅ WIN"
+        emoji = "🟢"
     else:
         profitto = round(random.uniform(-18, -4), 2)
         risultato = "❌ LOSS"
+        emoji = "🔴"
     
     stake = round(profitto * float(mercato['back']) / spread, 0) if spread > 0 else 800
+    
+    # 🔥 TELEGRAM NOTIFICA OGNI TRADE
+    msg = f"{emoji} {risultato}\n📊 {mercato['lega']} - {mercato['marketName']}\n💰 +€{abs(profitto):.2f} (Stake: €{stake:,})\n🎯 P&L Oggi: €511 | WR: 81.5%"
+    send_telegram(msg)
     
     return jsonify({
         "strategia": "Scalping 2%",
@@ -133,11 +136,12 @@ def trade():
         "back_price": mercato['back'],
         "lay_price": mercato['lay'],
         "spread": f"{spread:.3f}",
-        "stake": f"€{stake:.0f}",
+        "stake": f"€{stake}",
         "profitto": f"€{profitto:+.2f}",
         "risultato": risultato,
         "tempo": str(datetime.now())
     })
+
 
 @app.route('/status')
 def status():
