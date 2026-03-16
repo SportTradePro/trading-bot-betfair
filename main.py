@@ -14,6 +14,11 @@ def send_telegram(msg):
         except:
             print("❌ Telegram errore")
 
+trades_giorno = 0
+pnl_giorno = 0.0
+ultimo_record = 0
+last_report_time = 0
+
 from flask import Flask, jsonify
 import os
 import time
@@ -110,10 +115,14 @@ def leagues():
 
 @app.route('/trade')
 def trade():
+    # Contatori locali (no global)
+    trades = random.randint(35, 75)
+    pnl = round(random.uniform(400, 850), 2)
+    winrate = round(random.uniform(79, 86), 1)
+    
     mercato = random.choice(MERCATI_CACHE)
     spread = float(mercato['lay']) - float(mercato['back'])
     
-    # 82% WIN - 18% LOSS (realistico)
     if random.random() < 0.82:
         profitto = round(random.uniform(8, 28), 2)
         risultato = "✅ WIN"
@@ -123,11 +132,15 @@ def trade():
         risultato = "❌ LOSS"
         emoji = "🔴"
     
-    stake = round(profitto * float(mercato['back']) / spread, 0) if spread > 0 else 800
+    stake = 800  # Semplice
     
-    # 🔥 TELEGRAM NOTIFICA OGNI TRADE
-    msg = f"{emoji} {risultato}\n📊 {mercato['lega']} - {mercato['marketName']}\n💰 +€{abs(profitto):.2f} (Stake: €{stake:,})\n🎯 P&L Oggi: €511 | WR: 81.5%"
-    send_telegram(msg)
+    # TELEGRAM: RECORD ESTREMI + REPORT 4H
+    if abs(profitto) > 25:
+        send_telegram(f"{emoji} RECORD {risultato}\n📊 {mercato['lega']}\n💰 €{abs(profitto):.2f}")
+    
+    # REPORT OGNI 4 ORE (simulato)
+    if random.random() < 0.1:  # 10% chance per simulare 4h
+        send_telegram(f"📊 RIEPILOGO 4H\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
     
     return jsonify({
         "strategia": "Scalping 2%",
@@ -141,7 +154,6 @@ def trade():
         "risultato": risultato,
         "tempo": str(datetime.now())
     })
-
 
 @app.route('/status')
 def status():
