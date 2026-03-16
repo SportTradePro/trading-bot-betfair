@@ -1,6 +1,16 @@
 import os
 import requests
+import json
+from collections import deque
+import time
 
+# Dati storici per grafici (ultimi 100 trades)
+trade_history = deque(maxlen=100)
+pnl_history = [0]  # Inizia da 0
+
+# Telegram (le tue variabili Render)
+TG_TOKEN = os.getenv('TG_TOKEN')
+TG_CHAT = os.getenv('TG_CHAT_ID')
 # Telegram (le tue variabili Render)
 TG_TOKEN = os.getenv('TG_TOKEN')
 TG_CHAT = os.getenv('TG_CHAT_ID')
@@ -141,6 +151,16 @@ def trade():
     # REPORT OGNI 4 ORE (simulato)
     if random.random() < 0.1:  # 10% chance per simulare 4h
         send_telegram(f"📊 RIEPILOGO 4H\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
+
+    # Salva per grafici
+    trade_data = {
+        'tempo': str(datetime.now().hour),
+        'profitto': profitto,
+        'lega': mercato['lega'],
+        'risultato': risultato
+    }
+    trade_history.append(trade_data)
+    pnl_history.append(pnl_history[-1] + profitto)
     
     return jsonify({
         "strategia": "Scalping 2%",
