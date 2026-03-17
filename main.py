@@ -170,6 +170,8 @@ def trade():
     # Kelly Stake = % bankroll * edge
     kelly_stake = min(800, BANKROLL * KELLY_PCT)
     kelly_pct = round((kelly_stake / BANKROLL) * 100, 1)
+    STOP_LOSS = kelly_stake * 0.03  # 3% max loss
+    TRAILING_PROFIT = kelly_stake * 0.02  # Lock 2%
     
         # Salva per grafici
     trade_data = {
