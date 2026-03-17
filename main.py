@@ -144,8 +144,9 @@ def trade():
             # Estrai numero da totalMatched (es: "£63.5M" → 63.5)
             matched_str = mercato['totalMatched'].replace('£','').replace('€','').replace('M','')
             matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
-            leghe_top = ['Premier League', 'Serie A', 'Champions League', 'Liga Spagnola', 'Bundesliga']
-            return (spread >= 0.02 and matched > 50 and mercato['lega'] in leghe_top)
+            TUTTE_LEGHE = (LEGA_EUROPA + LEGA_SUDAMERICA + LEGA_MINORI + LEGA_USA + LEGA_INDIVIDUALI + LEGA_IPPICA)
+            leghe_top = TUTTE_LEGHE
+            return (spread >= 0.02 and matched > 20 and mercato['lega'] in leghe_top)
         except:
             return False
     
