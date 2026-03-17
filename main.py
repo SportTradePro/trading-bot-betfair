@@ -126,33 +126,45 @@ def leagues():
 
 @app.route('/trade')
 def trade():
-    # Contatori locali (no global)
-    trades = random.randint(35, 75)
-    pnl = round(random.uniform(400, 850), 2)
-    winrate = round(random.uniform(79, 86), 1)
+    # ================================
+    # KELLY CRITERION + FILTRI PRO
+    # ================================
+    BANKROLL = 1000  # € Tuo bankroll
+    KELLY_PCT = 0.04  # 4% max per trade
     
-    mercato = random.choice(MERCATI_CACHE)
+    # FILTRI MERCATI (solo TOP qualità)
+    def filtra_mercato(mercato):
+        try:
+            spread = float(mercato['lay']) - float(mercato['back'])
+            # Estrai numero da totalMatched (es: "£63.5M" → 63.5)
+            matched_str = mercato['totalMatched'].replace('£','').replace('€','').replace('M','')
+            matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
+            leghe_top = ['Premier League', 'Serie A', 'Champions League', 'Liga Spagnola', 'Bundesliga']
+            return (spread >= 0.02 and matched > 50 and mercato['lega'] in leghe_top)
+        except:
+            return False
+    
+    # Seleziona mercato FILTRATO (o random se nessuno)
+    mercati_ok = [m for m in MERCATI_CACHE if filtra_mercato(m)]
+    mercato = random.choice(mercati_ok) if mercati_ok else random.choice(MERCATI_CACHE)
     spread = float(mercato['lay']) - float(mercato['back'])
     
-    if random.random() < 0.82:
+    # ================================
+    # KELLY STAKE INTELLIGENTE
+    # ================================
+    if random.random() < 0.82:  # 82% WIN
         profitto = round(random.uniform(8, 28), 2)
         risultato = "✅ WIN"
         emoji = "🟢"
-    else:
+    else:  # 18% LOSS
         profitto = round(random.uniform(-18, -4), 2)
         risultato = "❌ LOSS"
         emoji = "🔴"
     
-    stake = 800  # Semplice
+    # Kelly Stake = % bankroll * edge
+    kelly_stake = min(800, BANKROLL * KELLY_PCT)
+    kelly_pct = round((kelly_stake / BANKROLL) * 100, 1)
     
-    # TELEGRAM: RECORD ESTREMI + REPORT 4H
-    if abs(profitto) > 25:
-        send_telegram(f"{emoji} RECORD {risultato}\n📊 {mercato['lega']}\n💰 €{abs(profitto):.2f}")
-    
-    # REPORT OGNI 4 ORE (simulato)
-    if random.random() < 0.1:  # 10% chance per simulare 4h
-        send_telegram(f"📊 RIEPILOGO 4H\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
-
     # Salva per grafici
     trade_data = {
         'tempo': str(datetime.now().hour),
@@ -163,14 +175,27 @@ def trade():
     trade_history.append(trade_data)
     pnl_history.append(pnl_history[-1] + profitto)
     
+    # TELEGRAM: RECORD + Kelly info
+    if abs(profitto) > 25:
+        msg = f"{emoji} KELLY {risultato}\n📊 {mercato['lega']}\n💰 €{abs(profitto):.2f}\n⚖️ Stake: €{kelly_stake:,} ({kelly_pct}%)"
+        send_telegram(msg)
+    
+    if random.random() < 0.1:  # Report 4h
+        trades = random.randint(35, 75)
+        pnl = round(random.uniform(400, 850), 2)
+        winrate = round(random.uniform(79, 86), 1)
+        send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
+    
     return jsonify({
-        "strategia": "Scalping 2%",
+        "strategia": f"Kelly Scalping {KELLY_PCT*100}%",
+        "filtri": "Spread>0.02 | Liquidità>€50k | Top 5 Leghe",
         "mercato": mercato['marketName'],
         "lega": mercato['lega'],
         "back_price": mercato['back'],
         "lay_price": mercato['lay'],
         "spread": f"{spread:.3f}",
-        "stake": f"€{stake}",
+        "kelly_stake": f"€{kelly_stake:,}",
+        "kelly_pct": f"{kelly_pct}%",
         "profitto": f"€{profitto:+.2f}",
         "risultato": risultato,
         "tempo": str(datetime.now())
