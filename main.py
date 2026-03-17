@@ -146,7 +146,7 @@ def trade():
             matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
             TUTTE_LEGHE = (LEGA_EUROPA + LEGA_SUDAMERICA + LEGA_MINORI + LEGA_USA + LEGA_INDIVIDUALI + LEGA_IPPICA)
             leghe_top = TUTTE_LEGHE
-            return (spread >= 0.01 and matched > 100 and float(mercato['back']) <= 1.12 and mercato['lega'] in leghe_top)
+            return (spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top)
         except:
             return False
     
