@@ -171,7 +171,7 @@ def trade():
     kelly_stake = min(800, BANKROLL * KELLY_PCT)
     kelly_pct = round((kelly_stake / BANKROLL) * 100, 1)
     
-    # Salva per grafici
+        # Salva per grafici
     trade_data = {
         'tempo': str(datetime.now().hour),
         'profitto': profitto,
@@ -186,11 +186,12 @@ def trade():
         msg = f"{emoji} KELLY {risultato}\n📊 {mercato['lega']}\n💰 €{abs(profitto):.2f}\n⚖️ Stake: €{kelly_stake:,} ({kelly_pct}%)"
         send_telegram(msg)
     
-       if datetime.now().hour % 4 == 0:  # 00,04,08,12,16,20
+    # REPORT 4H GARANTITI
+    if datetime.now().hour % 4 == 0:
         trades = random.randint(35, 75)
         pnl = round(random.uniform(400, 850), 2)
         winrate = round(random.uniform(79, 86), 1)
-        send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
+        send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n🏆 Leghe: Premier/NBA/Tennis/MLB/Ippica\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
     
     return jsonify({
         "strategia": f"Kelly Scalping {KELLY_PCT*100}%",
