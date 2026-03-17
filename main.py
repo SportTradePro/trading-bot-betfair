@@ -45,6 +45,11 @@ LEGA_EUROPA = [
 LEGA_SUDAMERICA = ["Brasileirão A", "Primera División ARG", "Copa Libertadores"]
 LEGA_MINORI = ["Eredivisie", "Primeira Liga", "Pro League Belgio", "Liga NOS"]
 
+# NUOVI SPORT LIQUIDI 24/7
+LEGA_USA = ["NBA", "MLB"]
+LEGA_INDIVIDUALI = ["Tennis ATP"]
+LEGA_IPPICA = ["Ippica UK"]
+
 def genera_mercati():
     """Genera 50+ mercati realistici da 20 leghe"""
     mercati = []
