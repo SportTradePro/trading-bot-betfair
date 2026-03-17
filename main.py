@@ -80,9 +80,10 @@ def catch_all(path):
     <h1>🚀 TRADING BOT BETFAIR - 20 LEGHE LIVE</h1>
     <p><b>📊 <a href="/markets">Mercati (50+)</a> | 
     🤖 <a href="/trade">Auto Trade LIVE</a> | 
-    📈 <a href="/status">Status Bot</a> | 
+    📈 <a href="/chart">CHART P&L</a> | 
     💰 <a href="/pnl">P&L Oggi</a> | 
-    <a href="/leagues">🏆 Leghe</a></b></p>
+    🏆 <a href="/leagues">Leghe</a></b></p>
+
     <hr>
     <p>✅ Server 24/7 | 🏆 {len(set(m["lega"] for m in MERCATI_CACHE))} Leghe | 
     ⚽ {len(MERCATI_CACHE)} Mercati | 🎯 Scalping 2%</p>
