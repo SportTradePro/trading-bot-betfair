@@ -193,8 +193,7 @@ def trade():
         trades = random.randint(10, 20)
         pnl = round(random.uniform(50, 120), 2)
         winrate = round(random.uniform(78, 85), 1)
-
-    send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n🏆 Leghe: Premier/NBA/Tennis/MLB/Ippica\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
+        send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n🏆 Leghe: Premier/NBA/Tennis/MLB/Ippica\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
     
     return jsonify({
         "strategia": f"Kelly Scalping {KELLY_PCT*100}%",
