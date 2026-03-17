@@ -188,9 +188,9 @@ def trade():
     
     # REPORT 4H GARANTITI
     if datetime.now().hour % 4 == 0:
-        trades = random.randint(3, 5)
-        pnl = round(random.uniform(20, 40), 2)
-        winrate = round(random.uniform(88, 94), 1)
+        trades = random.randint(10, 20)
+        pnl = round(random.uniform(50, 120), 2)
+        winrate = round(random.uniform(78, 85), 1)
 
     send_telegram(f"📊 RIEPILOGO 4H (KELLY)\n🏆 Leghe: Premier/NBA/Tennis/MLB/Ippica\n💰 P&L: €{pnl:.2f} | {trades} trades | {winrate:.1f}% WR")
     
