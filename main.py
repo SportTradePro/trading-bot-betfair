@@ -180,7 +180,7 @@ def trade():
         msg = f"{emoji} KELLY {risultato}\n📊 {mercato['lega']}\n💰 €{abs(profitto):.2f}\n⚖️ Stake: €{kelly_stake:,} ({kelly_pct}%)"
         send_telegram(msg)
     
-    if random.random() < 0.1:  # Report 4h
+   if datetime.now().hour % 4 == 0:  # 00,04,08,12,16,20
         trades = random.randint(35, 75)
         pnl = round(random.uniform(400, 850), 2)
         winrate = round(random.uniform(79, 86), 1)
