@@ -134,8 +134,8 @@ def trade():
     # ================================
     # KELLY CRITERION + FILTRI PRO
     # ================================
-    BANKROLL = 1000  # € Tuo bankroll
-    KELLY_PCT = 0.04  # 4% max per trade
+    BANKROLL = 500  # € Tuo bankroll
+    KELLY_PCT = 0.05  # 5% Kelly PRO
     
     # FILTRI MERCATI (solo TOP qualità)
     def filtra_mercato(mercato):
