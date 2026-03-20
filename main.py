@@ -168,9 +168,10 @@ try:
         kelly_stake *= 0.6  # 3% Kelly late game
         return True
     
-    return False  # Nessun filtro matchato
+     return False  # No match
 
-except:
+except Exception as e:
+    print(f"Errore filtro: {e}")
     return False
     
     # Seleziona mercato FILTRATO (o random se nessuno)
