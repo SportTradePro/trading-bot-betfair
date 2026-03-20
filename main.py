@@ -141,26 +141,25 @@ LEGHE_FINAL_BLITZ = ['Premier League', 'Championship', 'Saudi Pro League', 'Ered
 # FILTRI MERCATI (solo TOP qualità)
 def filtra_mercato(mercato):
     try:
-        spread = float(mercato['lay']) - float(mercato['back'])
-        matched_str = mercato['totalMatched'].replace('£','').replace('€','').replace('M','')
-        matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
-        TUTTE_LEGHE = (LEGA_EUROPA + LEGA_SUDAMERICA + LEGA_MINORI + LEGA_USA + LEGA_INDIVIDUALI + LEGA_IPPICA)
-        leghe_top = TUTTE_LEGHE
-        
-        # Filtro normale 1.15-1.30
-        if spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top:
-            return True
-        
-        # FINAL BLITZ 85-88° ★
-        if ('calcio' in mercato['lega'].lower() and
-            '85' <= mercato.get('minuto', '0') <= '88' and
-            mercato.get('score', '0-0') in ['0-0', '0-1', '1-0', '1-1'] and
-            float(mercato['lay']) >= 2.50 and
-            mercato['lega'] in LEGHE_FINAL_BLITZ):
+        # FINAL BLITZ 85-88° ★ (PRIMA PRIORITÀ)
+        if ('calcio' in str(mercato.get('lega','')).lower() and
+            '85' <= str(mercato.get('minuto','0')) <= '88' and
+            str(mercato.get('score','')) in ['0-0', '0-1', '1-0', '1-1'] and
+            float(mercato.get('lay','1.0')) >= 2.50):
             global priority, kelly_stake
             priority = "FINAL_BLITZ"
-            kelly_stake = 25  # Default
-            kelly_stake *= 0.6
+            kelly_stake = 25 * 0.6  # 3% Kelly
+            return True
+        
+        # Filtro normale (SECONDA PRIORITÀ)
+        leghe_top = ['Premier League', 'Championship', 'Saudi Pro League', 'Eredivisie']
+        spread = float(mercato.get('lay','1.0')) - float(mercato.get('back','1.0'))
+        matched_str = str(mercato.get('totalMatched','£0M')).replace('£','').replace('€','').replace('M','')
+        matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
+        
+        if (spread >= 0.015 and matched > 150 and 
+            float(mercato.get('lay','1.0')) <= 1.30 and 
+            str(mercato.get('lega','')) in leghe_top):
             return True
         
         return False
