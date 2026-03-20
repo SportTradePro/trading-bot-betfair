@@ -141,17 +141,16 @@ LEGHE_FINAL_BLITZ = ['Premier League', 'Championship', 'Saudi Pro League', 'Ered
 # FILTRI MERCATI (solo TOP qualità)
 def filtra_mercato(mercato):
     try:
-        # FINAL BLITZ 85-88° ★ (PRIMA PRIORITÀ)
-        if ('calcio' in str(mercato.get('lega','')).lower() and
-            '85' <= str(mercato.get('minuto','0')) <= '88' and
+        # FINAL BLITZ 85-88° ★ (TOP PRIORITY)
+        if ('85' <= str(mercato.get('minuto','0')) <= '88' and
             str(mercato.get('score','')) in ['0-0', '0-1', '1-0', '1-1'] and
             float(mercato.get('lay','1.0')) >= 2.50):
             global priority, kelly_stake
             priority = "FINAL_BLITZ"
-            kelly_stake = 25 * 0.6  # 3% Kelly
+            kelly_stake = 25 * 0.6  # €15 (3% Kelly)
             return True
         
-        # Filtro normale (SECONDA PRIORITÀ)
+        # Filtro normale (backup)
         leghe_top = ['Premier League', 'Championship', 'Saudi Pro League', 'Eredivisie']
         spread = float(mercato.get('lay','1.0')) - float(mercato.get('back','1.0'))
         matched_str = str(mercato.get('totalMatched','£0M')).replace('£','').replace('€','').replace('M','')
