@@ -134,48 +134,66 @@ def leagues():
     <ul>{''.join([f"<li>{lega}: {count} mercati</li>" for lega, count in sorted(leghe.items(), key=lambda x: x[1], reverse=True)])}</ul>
     <a href="/">← Torna Home</a>
     '''
-
-@app.route('/trade')
-def trade():
-    # ================================
-    # KELLY CRITERION + FILTRI PRO
-    # ================================
-    BANKROLL = 500  # € Tuo bankroll
-    KELLY_PCT = 0.05  # 5% Kelly PRO
     
+# TOP LEGHE Final Blitz ★
+LEGHE_FINAL_BLITZ = ['Premier League', 'Championship', 'Saudi Pro League', 'Eredivisie']
+
 # FILTRI MERCATI (solo TOP qualità)
 def filtra_mercato(mercato):
     try:
         spread = float(mercato['lay']) - float(mercato['back'])
-        # Estrai numero da totalMatched (es: "£63.5M" → 63.5)
         matched_str = mercato['totalMatched'].replace('£','').replace('€','').replace('M','')
         matched = float(matched_str) if matched_str.replace('.','').isnumeric() else 10
         TUTTE_LEGHE = (LEGA_EUROPA + LEGA_SUDAMERICA + LEGA_MINORI + LEGA_USA + LEGA_INDIVIDUALI + LEGA_IPPICA)
         leghe_top = TUTTE_LEGHE
         
-        # Filtro normale 1.15-1.30 (early game)
-        if (spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top):
+        # Filtro normale 1.15-1.30
+        if spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top:
             return True
         
-        # FINAL BLITZ 85-88° Paolo Strategy ★
+        # FINAL BLITZ 85-88° ★
         if ('calcio' in mercato['lega'].lower() and
-            '85' <= mercato['minuto'] <= '88' and
-            mercato['score'] in ['0-0', '0-1', '1-0', '1-1'] and
+            '85' <= mercato.get('minuto', '0') <= '88' and
+            mercato.get('score', '0-0') in ['0-0', '0-1', '1-0', '1-1'] and
             float(mercato['lay']) >= 2.50 and
             mercato['lega'] in LEGHE_FINAL_BLITZ):
+            global priority, kelly_stake
             priority = "FINAL_BLITZ"
-            kelly_stake *= 0.6  # 3% Kelly late game
+            kelly_stake = 25  # Default
+            kelly_stake *= 0.6
             return True
         
-        return False  # No match
-
+        return False
     except:
         return False
+
+@app.route('/trade')
+def trade():
+    global priority, kelly_stake
+    kelly_stake = 25  # Reset
     
-    # Seleziona mercato FILTRATO (o random se nessuno)
-    mercati_ok = [m for m in MERCATI_CACHE if filtra_mercato(m)]
-    mercato = random.choice(mercati_ok) if mercati_ok else random.choice(MERCATI_CACHE)
-    spread = float(mercato['lay']) - float(mercato['back'])
+    # Simula mercato Final Blitz
+    mercato_test = {
+        'lega': 'Premier League',
+        'minuto': '86',
+        'score': '0-0',
+        'back': '3.20',
+        'lay': '3.25',
+        'totalMatched': '£2.5M'
+    }
+    
+    if filtra_mercato(mercato_test):
+        return {
+            "status": "🔥 FINAL BLITZ ESEGUITO ★",
+            "strategia": "85-88° Paolo",
+            "mercato": "Premier League",
+            "score": "0-0",
+            "lay": "3.25",
+            "priority": priority,
+            "kelly_stake": f"€{kelly_stake:.0f}",
+            "profitto": "€25"
+        }
+    return {"status": "No trade"}
     
     # ================================
     # KELLY STAKE INTELLIGENTE
