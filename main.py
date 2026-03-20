@@ -153,21 +153,25 @@ def trade():
             TUTTE_LEGHE = (LEGA_EUROPA + LEGA_SUDAMERICA + LEGA_MINORI + LEGA_USA + LEGA_INDIVIDUALI + LEGA_IPPICA)
             leghe_top = TUTTE_LEGHE
 
-# Filtro normale (1.15-1.30)
-if (spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top):
-    return True
+try:
+    # Filtro normale (1.15-1.30 early game)
+    if (spread >= 0.015 and matched > 150 and float(mercato['lay']) <= 1.30 and mercato['lega'] in leghe_top):
+        return True
+    
+    # FINAL BLITZ 85-88° Paolo Strategy ★
+    if ('calcio' in mercato['lega'].lower() and
+        '85' <= mercato['minuto'] <= '88' and
+        mercato['score'] in ['0-0', '1-0', '0-1', '1-1'] and
+        float(mercato['lay']) >= 2.50 and
+        mercato['lega'] in LEGHE_FINAL_BLITZ):
+        priority = "FINAL_BLITZ"
+        kelly_stake *= 0.6  # 3% Kelly late game
+        return True
+    
+    return False  # Nessun filtro matchato
 
-# FINAL BLITZ 85-88° Paolo Strategy ★
-if ('calcio' in mercato['lega'].lower() and
-    '85' <= mercato['minuto'] <= '88' and
-    mercato['score'] in ['0-0', '1-0', '0-1', '1-1'] and
-    float(mercato['lay']) >= 2.50 and  # EV+ Final Blitz
-    mercato['lega'] in LEGHE_FINAL_BLITZ):
-    priority = "FINAL_BLITZ"
-    kelly_stake *= 0.6  # 3% Kelly late game
-    return True
-
-return False
+except:
+    return False
     
     # Seleziona mercato FILTRATO (o random se nessuno)
     mercati_ok = [m for m in MERCATI_CACHE if filtra_mercato(m)]
