@@ -168,7 +168,7 @@ try:
         kelly_stake *= 0.6  # 3% Kelly late game
         return True
     
-     return False  # No match
+    return False  # No match
 
 except Exception as e:
     print(f"Errore filtro: {e}")
