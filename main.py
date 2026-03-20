@@ -168,10 +168,6 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
-    global priority, kelly_stake
-    kelly_stake = 25  # Reset
-    
-    # Simula mercato Final Blitz
     mercato_test = {
         'lega': 'Premier League',
         'minuto': '86',
@@ -181,18 +177,17 @@ def trade():
         'totalMatched': '£2.5M'
     }
     
-    if filtra_mercato(mercato_test):
-        return {
-            "status": "🔥 FINAL BLITZ ESEGUITO ★",
-            "strategia": "85-88° Paolo",
-            "mercato": "Premier League",
-            "score": "0-0",
-            "lay": "3.25",
-            "priority": priority,
-            "kelly_stake": f"€{kelly_stake:.0f}",
-            "profitto": "€25"
-        }
-    return {"status": "No trade"}
+    # DEBUG: Test diretto senza filtri
+    debug = {
+        "test_data": mercato_test,
+        "calcio_in_lega": 'calcio' in str(mercato_test.get('lega','')).lower(),
+        "minuto_ok": '85' <= str(mercato_test.get('minuto','0')) <= '88',
+        "score_ok": str(mercato_test.get('score','')) in ['0-0', '0-1', '1-0', '1-1'],
+        "lay_ok": float(mercato_test.get('lay','1.0')) >= 2.50,
+        "filtra_mercato": filtra_mercato(mercato_test)
+    }
+    
+    return debug
     
     # ================================
     # KELLY STAKE INTELLIGENTE
