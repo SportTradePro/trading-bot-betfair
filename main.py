@@ -167,27 +167,39 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
+    import requests, os
+    
+    # Final Blitz mercato
     mercato_test = {
-        'lega': 'Premier League',
-        'minuto': '86',
-        'score': '0-0',
-        'back': '3.20',
-        'lay': '3.25',
-        'totalMatched': '£2.5M'
+        'lega': 'Premier League', 'minuto': '86', 'score': '0-0', 
+        'back': '3.20', 'lay': '3.25', 'totalMatched': '£2.5M'
     }
     
-    # DEBUG: Test diretto senza filtri
-    debug = {
-        "test_data": mercato_test,
-        "calcio_in_lega": 'calcio' in str(mercato_test.get('lega','')).lower(),
-        "minuto_ok": '85' <= str(mercato_test.get('minuto','0')) <= '88',
-        "score_ok": str(mercato_test.get('score','')) in ['0-0', '0-1', '1-0', '1-1'],
-        "lay_ok": float(mercato_test.get('lay','1.0')) >= 2.50,
-        "filtra_mercato": filtra_mercato(mercato_test)
-    }
-    
-    return debug
-    
+    if filtra_mercato(mercato_test):
+        # TELEGRAM SEGNALE LIVE
+        token = os.getenv('TGTOKEN')
+        chat_id = os.getenv('TGCHATID')
+        if token and chat_id:
+            messaggio = f"""🔥 FINAL BLITZ 86' {mercato_test['score']} Premier League
+⚽ Over 0.5 Lay {mercato_test['lay']} 
+💰 Kelly €15 (3%) 
+📈 Profitto atteso: €25"""
+            
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            response = requests.post(url, data={
+                'chat_id': chat_id,
+                'text': messaggio,
+                'parse_mode': 'HTML'
+            })
+        
+        return {
+            "status": "🚀 FINAL BLITZ + TELEGRAM INVIATO ★",
+            "chat_id": chat_id,
+            "telegram_response": response.json() if 'response' in locals() else "No token",
+            "profitto": "€25"
+        }
+    return {"status": "No trade"}
+   
     # ================================
     # KELLY STAKE INTELLIGENTE
     # ================================
