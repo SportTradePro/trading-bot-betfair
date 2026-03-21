@@ -169,9 +169,9 @@ def filtra_mercato(mercato):
 def trade():
     import requests
     
-    # HARDCODE per test (poi toglie)
-    token = "8742945737:AAHtyxUS4GmIE4lPvL-HiBNBkD2jaJRglZk"
-    chat_id = "1522461812"  # Il tuo Chat ID
+    # HARDCODE - Token e Chat ID tuoi
+    TOKEN = "8742945737:AAHtyxUS4GmIE4lPvL-HiBNBkD2jaJRglZk"
+    CHAT_ID = "1522461812"
     
     mercato_test = {
         'lega': 'Premier League', 'minuto': '86', 'score': '0-0', 
@@ -183,16 +183,17 @@ def trade():
 ⚽ Lay 3.25 Kelly €15
 💰 Profitto: €25"""
         
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
         response = requests.post(url, data={
-            'chat_id': chat_id,
+            'chat_id': CHAT_ID,
             'text': messaggio
         })
         
         return {
-            "status": "🔥 FINAL BLITZ + TELEGRAM HARDCODE",
-            "chat_id": chat_id,
-            "response": response.json()
+            "status": "🔥 FINAL BLITZ INVIATO",
+            "chat_id_used": CHAT_ID,
+            "response_status": response.status_code,
+            "response_json": response.json()
         }
     
     return {"status": "No trade"}
