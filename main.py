@@ -169,8 +169,8 @@ def filtra_mercato(mercato):
 def trade():
     import requests, os
     
-    token = os.getenv('TGTOKEN')  # 8638470074:AAFJR96ZQKRSMF3EszGAAn_jV6idoatXSeI
-    chat_id = os.getenv('TGCHATID')  # 1522461812
+    token = os.getenv('TGTOKEN')
+    chat_id = os.getenv('TGCHATID')
     
     if not (token and chat_id):
         return {"status": "❌ Imposta Environment Render"}
