@@ -167,13 +167,14 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
-    import requests, os
+    import os
     
-    token = os.getenv('TGTOKEN')
-    chat_id = os.getenv('TGCHATID')
-    
-    if not (token and chat_id):
-        return {"status": "❌ Imposta Environment Render"}
+    # DIAGNOSTICO Environment
+    return {
+        "TGTOKEN": os.getenv('TGTOKEN')[:10] + "..." if os.getenv('TGTOKEN') else "MANCANTE",
+        "TGCHATID": os.getenv('TGCHATID') or "MANCANTE",
+        "all_env": {k: v[:10] + "..." if len(v) > 10 else v for k, v in os.environ.items() if 'TG' in k.upper()}
+    }
     
     # Final Blitz test
     mercato_test = {
