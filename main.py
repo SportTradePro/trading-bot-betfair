@@ -192,7 +192,27 @@ def trade():
         }
     
     return {"status": "No trade"}
-   
+    
+@app.route('/start')
+def start():
+    import requests, os
+    token = os.getenv('TG_TOKEN')
+    chat_id = os.getenv('TG_CHAT_ID')  # "1522461812"
+    
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    response = requests.post(url, data={
+        'chat_id': chat_id,
+        'text': '🚀 SportTraderBot LIVE e pronto! Chat ID OK.'
+    })
+    
+    return {
+        "status": "START Telegram",
+        "response_ok": response.json().get('ok'),
+        "response_text": response.text[:100]
+    }
+
+# ... fine file
+
     # ================================
     # KELLY STAKE INTELLIGENTE
     # ================================
