@@ -167,13 +167,11 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
-    import requests, os
+    import requests
     
-    token = os.getenv('TG_TOKEN')      # ← CORRETTO
-    chat_id = os.getenv('TG_CHAT_ID')  # ← CORRETTO
-    
-    if not (token and chat_id):
-        return {"status": "❌ Environment non trovato"}
+    # DATI SICURI (test)
+    TOKEN = os.getenv('TG_TOKEN')  # Il tuo 8638470074:...
+    CHAT_ID = "1522461812"  # Il tuo ID
     
     mercato_test = {
         'lega': 'Premier League', 'minuto': '86', 'score': '0-0',
@@ -181,10 +179,17 @@ def trade():
     }
     
     if filtra_mercato(mercato_test):
-        msg = "🔥 FINAL BLITZ 86' 0-0 SportTraderBot\n⚽ Lay 3.25 Kelly €15"
-        requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
-                     data={'chat_id': chat_id, 'text': msg})
-        return {"status": "✅ SportTraderBot LIVE ★"}
+        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+        response = requests.post(url, data={
+            'chat_id': CHAT_ID,
+            'text': '🔥 TEST SportTraderBot - Ora funziona!'
+        })
+        
+        return {
+            "status": "TEST Telegram",
+            "response_ok": response.json().get('ok'),
+            "response_text": response.text[:100]
+        }
     
     return {"status": "No trade"}
    
