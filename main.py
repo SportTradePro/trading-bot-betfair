@@ -167,34 +167,37 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
-    import requests
+    import requests, os
     
-    # HARDCODE - Token e Chat ID tuoi
-    TOKEN = "8742945737:AAHtyxUS4GmIE4lPvL-HiBNBkD2jaJRglZk"
-    CHAT_ID = "1522461812"
-    
+    # FINAL BLITZ
     mercato_test = {
         'lega': 'Premier League', 'minuto': '86', 'score': '0-0', 
         'back': '3.20', 'lay': '3.25', 'totalMatched': '£2.5M'
     }
     
     if filtra_mercato(mercato_test):
-        messaggio = f"""🔥 FINAL BLITZ 86' 0-0 Premier League
+        # TELEGRAM CON Environment
+        token = os.getenv('TGTOKEN')
+        chat_id = os.getenv('TGCHATID')
+        
+        if token and chat_id:
+            messaggio = f"""🔥 FINAL BLITZ 86' 0-0 Premier League
 ⚽ Lay 3.25 Kelly €15
 💰 Profitto: €25"""
-        
-        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-        response = requests.post(url, data={
-            'chat_id': CHAT_ID,
-            'text': messaggio
-        })
-        
-        return {
-            "status": "🔥 FINAL BLITZ INVIATO",
-            "chat_id_used": CHAT_ID,
-            "response_status": response.status_code,
-            "response_json": response.json()
-        }
+            
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            response = requests.post(url, data={
+                'chat_id': chat_id,
+                'text': messaggio
+            })
+            
+            return {
+                "status": "🚀 FINAL BLITZ + TELEGRAM LIVE ★",
+                "chat_id": chat_id,
+                "response": "OK" if response.json().get('ok') else "Error"
+            }
+        else:
+            return {"status": "Environment mancante", "token": token, "chat_id": chat_id}
     
     return {"status": "No trade"}
    
