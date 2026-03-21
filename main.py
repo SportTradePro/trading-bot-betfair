@@ -167,26 +167,24 @@ def filtra_mercato(mercato):
 
 @app.route('/trade')
 def trade():
-    import os
+    import requests, os
     
-    # DIAGNOSTICO Environment
-    return {
-        "TGTOKEN": os.getenv('TGTOKEN')[:10] + "..." if os.getenv('TGTOKEN') else "MANCANTE",
-        "TGCHATID": os.getenv('TGCHATID') or "MANCANTE",
-        "all_env": {k: v[:10] + "..." if len(v) > 10 else v for k, v in os.environ.items() if 'TG' in k.upper()}
-    }
+    token = os.getenv('TG_TOKEN')      # ← CORRETTO
+    chat_id = os.getenv('TG_CHAT_ID')  # ← CORRETTO
     
-    # Final Blitz test
+    if not (token and chat_id):
+        return {"status": "❌ Environment non trovato"}
+    
     mercato_test = {
         'lega': 'Premier League', 'minuto': '86', 'score': '0-0',
         'back': '3.20', 'lay': '3.25', 'totalMatched': '£2.5M'
     }
     
     if filtra_mercato(mercato_test):
-        msg = "🔥 FINAL BLITZ 86' 0-0 SportTraderBot\n⚽ Lay 3.25 Kelly €15\n💰 Profitto: €25"
-        url = f"https://api.telegram.org/bot{token}/sendMessage"
-        requests.post(url, data={'chat_id': chat_id, 'text': msg})
-        return {"status": "✅ SportTraderBot NUOVO LIVE ★"}
+        msg = "🔥 FINAL BLITZ 86' 0-0 SportTraderBot\n⚽ Lay 3.25 Kelly €15"
+        requests.post(f"https://api.telegram.org/bot{token}/sendMessage", 
+                     data={'chat_id': chat_id, 'text': msg})
+        return {"status": "✅ SportTraderBot LIVE ★"}
     
     return {"status": "No trade"}
    
